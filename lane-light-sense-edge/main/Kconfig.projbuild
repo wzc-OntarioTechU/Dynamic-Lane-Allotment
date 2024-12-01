@@ -1,5 +1,35 @@
 menu "User Configuration"
 
+    config CONFIG_ESP_01_PORT
+        int "UART Port Number"
+        default 2
+        help
+            The port number for the UART used with the ESP-01 for bluetooth.
+    
+    config CONFIG_ESP_01_TX_PIN
+        int "UART TX PIN"
+        default 7
+        help
+            The pin number of the UART TX pin used with the ESP-01 for bluetooth.
+
+    config CONFIG_ESP_01_RX_PIN
+        int "UART RX PIN"
+        default 6
+        help
+            The pin number of the UART RX pin used with the ESP-01 for bluetooth.
+
+    config CONFIG_ESP_01_BAUD
+        int "UART BAUD"
+        default 115200
+        help
+            The baud rate used for the UART connection to the ESP-01 for bluetooth.
+
+    config CONFIG_ESP_01_BUFFER_SIZE
+        int "UART Buffer Size"
+        default 1024
+        help
+            The buffer size for the UART connection to the ESP-01 for bluetooth in bytes.
+    
     config CONFIG_LED_PIN
         int "LED Pin"
         default 7
