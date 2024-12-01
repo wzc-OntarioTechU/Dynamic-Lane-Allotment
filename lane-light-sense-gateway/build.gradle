@@ -8,6 +8,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+    id 'java'
 }
 
 repositories {
@@ -33,5 +34,15 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'group1.sofe4610u.gateway.App'
+    mainClass = 'group1.sofe4610u.gateway.Gateway'
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "group1.sofe4610u.gateway.Gateway"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
