@@ -1,5 +1,11 @@
 menu "User Configuration"
 
+    config CONFIG_STATION_NUM
+        int "Station Number"
+        default 1
+        help
+            The number for this edge device station used when communicating with the gateway.
+
     config CONFIG_ESP_01_PORT
         int "UART Port Number"
         default 2
