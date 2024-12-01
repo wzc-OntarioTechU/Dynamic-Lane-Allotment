@@ -11,7 +11,7 @@ static const char* TAG = "LED_STRIP";
 static led_strip_handle_t* strip = NULL;
 
 static int led_strip_init() {
-    strip = led_strip_new(PIN, LED_COUNT);
+    strip = led_strip_init(LED_MODEL_WS2812, PIN, LED_COUNT);
     if (strip == NULL) {
         ESP_LOGE(TAG, "Failed to initiate LED strip.");
         return 1;

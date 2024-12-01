@@ -2,6 +2,7 @@
 #include "esp_bt.h"
 #include "esp_bt_device.h"
 #include "esp_gap_ble_api.h"
+#include "esp_bt_main.h"
 #include "esp_log.h"
 #include "nvs.h"
 #include "nvs_flash.h"
@@ -39,6 +40,18 @@ static void init_bt() {
     ESP_LOGI(TAG, "Done BT init.");
 }
 
+static void bt_scan_callback(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *params) {
+    if (event == ESP_GAP_BLE_SCAN_RESULT_EVT) {
+        if (params->scan_rst.search_evt == ESP_GAP_SEARCH_INQ_RES_EVT) {
+            char mac[18];
+            mac[17] = '\0';
+            int rssi = params->scan_rst.rssi;
+            snprintf(mac, 18, "%02x:%02x:%02x:%02x:%02x:%02x", params->scan_rst.bda[0], params->scan_rst.bda[1], params->scan_rst.bda[2], params->scan_rst.bda[3], params->scan_rst.bda[4], params->scan_rst.bda[5]);
+            (*bt_device_callback)(mac, rssi);
+        }
+    }
+}
+
 static void start_bt_scanning() {
     ESP_LOGI(TAG, "Starting BT scanning...");
     ESP_ERROR_CHECK(esp_ble_gap_set_scan_params(&bt_scan_params));
@@ -48,16 +61,4 @@ static void start_bt_scanning() {
 
 static void set_bt_device_callback(void (*function)(char*, double)) {
     bt_device_callback = function;
-}
-
-static void bt_scan_callback(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *params) {
-    if (event == ESP_GAP_BLE_SCAN_RESULT_EVT) {
-        if (params->scan_rst.search_evt = ESP_GAP_SEARCH_INQ_RES_EVT) {
-            char mac[18];
-            mac[17] = '\0';
-            int rssi = params->scan_rst.rssi;
-            snprintf(mac, 18, "%02x:%02x:%02x:%02x:%02x:%02x", params->scan_rst.bda[0], params->scan_rst.bda[1], params->scan_rst.bda[2], params->scan_rst.bda[3], params->scan_rst.bda[4], params->scan_rst.bda[5]);
-            (*bt_device_callback)(mac, rssi);
-        }
-    }
 }

@@ -52,7 +52,7 @@ static void recv_udp_packet_esp01() {
     int packet_len = 0;
     char* packet;
 
-    while (packet_len = 0) {
+    while (packet_len == 0) {
         int len = uart_read_bytes(PORT, data, BUFFER_SIZE, pdMS_TO_TICKS(50));
         if (len > 0) {
             data[len] = '\0';

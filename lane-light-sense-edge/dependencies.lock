@@ -1,15 +1,4 @@
 dependencies:
-  espressif/coap:
-    component_hash: 041beed0026e0b9f461ffea422bcb579b41fc58df1c1286648b749aceaed2e9b
-    dependencies:
-    - name: idf
-      registry_url: https://components.espressif.com
-      require: private
-      version: '>=4.4'
-    source:
-      registry_url: https://components.espressif.com/
-      type: service
-    version: 4.3.5~2
   espressif/led_strip:
     component_hash: f907c58f722c58ab8545366668cfd8769cefb7d97a631a14e9d16234cc72bdff
     dependencies:
@@ -24,18 +13,9 @@ dependencies:
     source:
       type: idf
     version: 5.3.1
-  wolfssl/wolfssl:
-    component_hash: 959be4312dbd4d469824e4e02ec0e5e5654da4c3f210bd59343f28a3547472d2
-    dependencies: []
-    source:
-      registry_url: https://components.espressif.com/
-      type: service
-    version: 5.7.2
 direct_dependencies:
-- espressif/coap
 - espressif/led_strip
 - idf
-- wolfssl/wolfssl
-manifest_hash: 0a8e15223828b16a23bd386908b16c1164fdffbf458a358f471e50094fb61237
+manifest_hash: 1a30e21b9dd49e2cf645f701cf32567a515300d55aeb8c37f4a05c3370dee8ad
 target: esp32
 version: 2.0.0
