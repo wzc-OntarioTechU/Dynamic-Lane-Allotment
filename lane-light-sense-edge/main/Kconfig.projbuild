@@ -1,5 +1,17 @@
-menu "Example Configuration"
+menu "User Configuration"
 
+    config CONFIG_COAP_PORT
+        int "COAP Port"
+        default 5684
+        help
+            The port number of the COAP Server (to connect to).
+    
+    config CONFIG_COAP_SERVER_PORT
+        string "COAP Server Address"
+        default "192.168.0.1"
+        help
+            The ipv4 address of the target COAP server.
+    
     config ESP_WIFI_SSID
         string "WiFi SSID"
         default "myssid"

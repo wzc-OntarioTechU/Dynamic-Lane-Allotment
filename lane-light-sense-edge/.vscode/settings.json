@@ -13,5 +13,8 @@
     ],
     "idf.portWin": "COM3",
     "idf.pythonBinPathWin": "C:\\Users\\WilliamChamberlain\\esp-tools\\python_env\\idf5.3_py3.11_env\\Scripts\\python.exe",
-    "idf.toolsPathWin": "C:\\Users\\WilliamChamberlain\\esp-tools"
+    "idf.toolsPathWin": "C:\\Users\\WilliamChamberlain\\esp-tools",
+    "files.associations": {
+        "coap.h": "c"
+    }
 }
