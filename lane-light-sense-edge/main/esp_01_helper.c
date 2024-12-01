@@ -15,7 +15,7 @@
 static const char* TAG = "ESP-01_Helper";
 static void (*recvHandler)(char* data, size_t length);
 
-static void esp_01_uart_init() {
+void esp_01_uart_init() {
     const uart_config_t config = {
         .baud_rate = BAUD,
         .data_bits = UART_DATA_8_BITS,
@@ -40,14 +40,14 @@ static void esp_01_uart_init() {
     uart_write_bytes(PORT, server_connect_cmd, strlen(server_connect_cmd));
 }
 
-static void send_udp_packet_esp01(char* data, size_t len) {
+void send_udp_packet_esp01(char* data, size_t len) {
     char send_len_cmd[512];
     snprintf(send_len_cmd, sizeof(send_len_cmd), "AT+CIPSEND=%d\r\n", len);
     uart_write_bytes(PORT, send_len_cmd, strlen(send_len_cmd));
     uart_write_bytes(PORT, data, len);
 }
 
-static void recv_udp_packet_esp01() {
+void recv_udp_packet_esp01() {
     char* data = malloc(BUFFER_SIZE);
     int packet_len = 0;
     char* packet;
@@ -78,6 +78,6 @@ static void recv_udp_packet_esp01() {
     free(data);
 }
 
-static void set_recv_handler(void (*function)(char*, size_t)) {
+void set_recv_handler(void (*function)(char*, size_t)) {
     recvHandler = function;
 }

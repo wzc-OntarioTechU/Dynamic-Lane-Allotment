@@ -19,7 +19,7 @@ static const esp_ble_scan_params_t bt_scan_params = {
     .scan_duplicate = BLE_SCAN_DUPLICATE_ENABLE
 };
 
-static void init_bt() {
+void init_bt() {
     ESP_LOGI(TAG, "Initalizing BT.");
     esp_err_t ret_val = nvs_flash_init();
     if (ret_val == ESP_ERR_NVS_NO_FREE_PAGES || ret_val == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -40,7 +40,7 @@ static void init_bt() {
     ESP_LOGI(TAG, "Done BT init.");
 }
 
-static void bt_scan_callback(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *params) {
+void bt_scan_callback(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *params) {
     if (event == ESP_GAP_BLE_SCAN_RESULT_EVT) {
         if (params->scan_rst.search_evt == ESP_GAP_SEARCH_INQ_RES_EVT) {
             char mac[18];
@@ -52,13 +52,13 @@ static void bt_scan_callback(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_
     }
 }
 
-static void start_bt_scanning() {
+void start_bt_scanning() {
     ESP_LOGI(TAG, "Starting BT scanning...");
     ESP_ERROR_CHECK(esp_ble_gap_set_scan_params(&bt_scan_params));
     ESP_ERROR_CHECK(esp_ble_gap_register_callback(bt_scan_callback));
     ESP_ERROR_CHECK(esp_ble_gap_start_scanning(0xFFFFFFFF)); // scan for the max value of uint32_t seconds (2^32 - 1)s
 }
 
-static void set_bt_device_callback(void (*function)(char*, double)) {
+void set_bt_device_callback(void (*function)(char*, int)) {
     bt_device_callback = function;
 }
