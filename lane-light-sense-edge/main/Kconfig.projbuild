@@ -1,5 +1,17 @@
 menu "User Configuration"
 
+    config CONFIG_LED_PIN
+        int "LED Pin"
+        default 7
+        help
+            The pin number for the led data.
+
+    config CONFIG_LED_COUNT
+        int "LED Count"
+        default 20
+        help
+            The number of leds in the strip.
+
     config CONFIG_COAP_PORT
         int "COAP Port"
         default 5684
