@@ -9,8 +9,8 @@
 
 static const char* TAG = "LED_STRIP";
 
-static led_strip_handle_t* strip = NULL;
-static led_strip_config_t strip_config = {
+led_strip_handle_t strip;
+led_strip_config_t strip_config = {
     .strip_gpio_num = PIN,
     .max_leds = LED_COUNT,
     .led_model = LED_MODEL_WS2812,
@@ -19,7 +19,7 @@ static led_strip_config_t strip_config = {
         .invert_out = false
     }
 };
-static led_strip_rmt_config_t rmt_config = {
+led_strip_rmt_config_t rmt_config = {
     .clk_src = RMT_CLK_SRC_DEFAULT,
     .resolution_hz = LED_STRIP_RMT_RES_HZ,
     .mem_block_symbols = 64,
@@ -29,11 +29,7 @@ static led_strip_rmt_config_t rmt_config = {
 };
 
 int led_strip_init() {
-    ESP_ERROR_CHECK(led_strip_new_rmt_device(&strip_config, &rmt_config, strip));
-    if (strip == NULL) {
-        ESP_LOGE(TAG, "Failed to initiate LED strip.");
-        return 1;
-    }
+    ESP_ERROR_CHECK(led_strip_new_rmt_device(&strip_config, &rmt_config, &strip));
     ESP_LOGI(TAG, "LED strip initialized.");
     return 0;
 }

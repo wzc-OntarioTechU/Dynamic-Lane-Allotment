@@ -41,7 +41,10 @@ void udp_task(void* params) {
 }
 
 void bt_task(void* params) {
-    start_bt_scanning();
+    while (true) {
+        start_bt_scanning();
+        vTaskDelay(pdMS_TO_TICKS(30 * 1000));
+    }
 }
 
 void app_main() {
