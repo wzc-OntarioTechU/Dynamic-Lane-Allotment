@@ -23,7 +23,7 @@ public class DBSubmitter extends Thread {
                     statement.setInt(1, next.stationID);
                     statement.setString(2, next.mac);
                     statement.setInt(3, next.rssi);
-                    statement.executeQuery();
+                    statement.executeUpdate();
                 } catch (SQLException e) {
                     System.err.println("Failed to submit to signal log db: " + e.getMessage());
                     e.printStackTrace();

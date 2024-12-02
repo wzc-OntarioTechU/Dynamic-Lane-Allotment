@@ -17,7 +17,7 @@ public class ClientHandler extends Thread {
     @Override
     public void run() {
         String data = new String(pdu.getData(), 0, pdu.getLength());
-        String[] parts = data.split(";,");
+        String[] parts = data.split("[;,]");
         int stationID = 0;
         try {
             stationID = Integer.parseInt(parts[0]);
@@ -27,7 +27,7 @@ public class ClientHandler extends Thread {
             return;
         }
         updateStationAddr(stationID, clientAddress, clientPort);
-        for (int i = 1; i < parts.length; i += 2) {
+        for (int i = 1; i < parts.length - 1; i += 2) {
             try {
                 DBSubmitter.signalQueue.add(new StationMacRSSI(stationID, parts[i], Integer.parseInt(parts[i + 1])));
             } catch (NumberFormatException | IndexOutOfBoundsException e) {

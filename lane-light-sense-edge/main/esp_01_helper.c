@@ -1,6 +1,7 @@
 #include <string.h>
 #include "driver/uart.h"
 #include "esp_log.h"
+#include "freertos/semphr.h"
 
 #define PORT CONFIG_CONFIG_ESP_01_PORT
 #define TX_PIN CONFIG_CONFIG_ESP_01_TX_PIN
@@ -14,8 +15,11 @@
 
 static const char* TAG = "ESP-01_Helper";
 static void (*recvHandler)(char* data, size_t length);
+static SemaphoreHandle_t mut;
 
 void esp_01_uart_init() {
+    mut = xSemaphoreCreateMutex();
+    xSemaphoreTake(mut, pdMS_TO_TICKS(5000));
     const uart_config_t config = {
         .baud_rate = BAUD,
         .data_bits = UART_DATA_8_BITS,
@@ -45,14 +49,31 @@ void esp_01_uart_init() {
     char server_connect_cmd[1 + strlen("AT+CIPSTART=\"UDP\",\"\",\r\n") + strlen(ADDRESS) + 6];
     snprintf(server_connect_cmd, sizeof(server_connect_cmd), "AT+CIPSTART=\"UDP\",\"%s\",%d\r\n", ADDRESS, COAP_PORT);
     uart_write_bytes(PORT, server_connect_cmd, strlen(server_connect_cmd));
+    xSemaphoreGive(mut);
 }
 
 void send_udp_packet_esp01(char* data, size_t len) {
+    xSemaphoreTake(mut, pdMS_TO_TICKS(5000));
     char send_len_cmd[512];
     ESP_LOGI(TAG, "Sending udp.");
     snprintf(send_len_cmd, sizeof(send_len_cmd), "AT+CIPSEND=%d\r\n", len);
     uart_write_bytes(PORT, send_len_cmd, strlen(send_len_cmd));
+    char tmp_data[32];
+    tmp_data[31] = '\0';
+    int tmp_len = 0;
+    while (tmp_len == 0) {
+        tmp_len = uart_read_bytes(PORT, tmp_data, 31, pdMS_TO_TICKS(50));
+        if (tmp_len > 0) {
+            ESP_LOGI(TAG, "Received: %s", tmp_data);
+            if (strchr((char *)tmp_data, '>') != NULL) {
+                break;
+            }
+        }
+        tmp_len = 0;
+    }
+
     uart_write_bytes(PORT, data, len);
+    xSemaphoreGive(mut);
 }
 
 void recv_udp_packet_esp01() {
@@ -61,26 +82,30 @@ void recv_udp_packet_esp01() {
     char* packet;
 
     while (packet_len == 0) {
-        int len = uart_read_bytes(PORT, data, BUFFER_SIZE, pdMS_TO_TICKS(50));
-        if (len > 0) {
-            ESP_LOGI(TAG, "Received PDU.");
-            data[len] = '\0';
+        if (xSemaphoreTake(mut, pdMS_TO_TICKS(100))) {
+            int len = uart_read_bytes(PORT, data, BUFFER_SIZE, pdMS_TO_TICKS(50));
+            xSemaphoreGive(mut);
+            if (len > 0) {
+                ESP_LOGI(TAG, "Received PDU.");
+                data[len] = '\0';
 
-            packet = strstr(data, "+IPD,");
-            if (packet) {
-                char* start = strchr(packet, ',') + 1;
-                packet_len = atoi(start);
+                packet = strstr(data, "+IPD,");
+                if (packet) {
+                    char* start = strchr(packet, ',') + 1;
+                    packet_len = atoi(start);
 
-                start = strstr(packet, ":") + 1;
-                int payload_offset = start - data;
+                    start = strstr(packet, ":") + 1;
+                    int payload_offset = start - data;
 
-                if (len >= payload_offset + packet_len) {
-                    char* pdu = malloc(packet_len);
-                    memcpy(pdu, start, packet_len);
-                    (*recvHandler)(pdu, packet_len);
-                    free(pdu);
+                    if (len >= payload_offset + packet_len) {
+                        char* pdu = malloc(packet_len);
+                        memcpy(pdu, start, packet_len);
+                        (*recvHandler)(pdu, packet_len);
+                        free(pdu);
+                    }
                 }
             }
+            
         }
     }
 

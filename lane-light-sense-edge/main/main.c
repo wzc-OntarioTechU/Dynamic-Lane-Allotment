@@ -13,7 +13,7 @@ static const char* TAG = "APP_MAIN";
 void bt_handle_func(char* mac, int rssi) {
     char msg[32];
     memset(msg, '\0', 32);
-    snprintf(msg, 32, "%d;%s,%d;", ST_ID, mac, rssi);
+    snprintf(msg, 32, "%d;%s,%d;\r\n", ST_ID, mac, rssi);
     send_udp_packet_esp01(msg, strlen(msg));
 }
 
