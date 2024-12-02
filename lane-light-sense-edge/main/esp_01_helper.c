@@ -24,17 +24,24 @@ void esp_01_uart_init() {
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
     };
 
+    ESP_LOGI(TAG, "Starting UART.");
     ESP_ERROR_CHECK(uart_driver_install(PORT, BUFFER_SIZE * 2, 0, 0, NULL, 0));
     ESP_ERROR_CHECK(uart_param_config(PORT, &config));
     ESP_ERROR_CHECK(uart_set_pin(PORT, TX_PIN, RX_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
 
+    char* at_start_cmd = "AT\r\n";
+    uart_write_bytes(PORT, at_start_cmd, strlen(at_start_cmd));
+    ESP_LOGI(TAG, "Sending station cmd.");
     char* station_cmd = "AT+CWMODE=1\r\n";
+    ESP_LOGI(TAG, "Sending station connect cmd.");
     uart_write_bytes(PORT, station_cmd, strlen(station_cmd));
     char station_connect_cmd[1 + strlen("AT+CWJAP=\"\",\"\"\r\n") + strlen(WIFI_SSID) + strlen(WIFI_PASS)];
     snprintf(station_connect_cmd, sizeof(station_connect_cmd), "AT+CWJAP=\"%s\",\"%s\"\r\n", WIFI_SSID, WIFI_PASS);
     uart_write_bytes(PORT, station_connect_cmd, strlen(station_connect_cmd));
-    char* multi_cmd = "AT+CIPMUX=1\r\n";
+    ESP_LOGI(TAG, "SENDING station config cmd.");
+    char* multi_cmd = "AT+CIPMUX=0\r\n";
     uart_write_bytes(PORT, multi_cmd, strlen(multi_cmd));
+    ESP_LOGI(TAG, "SETTING FOR UDP");
     char server_connect_cmd[1 + strlen("AT+CIPSTART=\"UDP\",\"\",\r\n") + strlen(ADDRESS) + 6];
     snprintf(server_connect_cmd, sizeof(server_connect_cmd), "AT+CIPSTART=\"UDP\",\"%s\",%d\r\n", ADDRESS, COAP_PORT);
     uart_write_bytes(PORT, server_connect_cmd, strlen(server_connect_cmd));
@@ -42,6 +49,7 @@ void esp_01_uart_init() {
 
 void send_udp_packet_esp01(char* data, size_t len) {
     char send_len_cmd[512];
+    ESP_LOGI(TAG, "Sending udp.");
     snprintf(send_len_cmd, sizeof(send_len_cmd), "AT+CIPSEND=%d\r\n", len);
     uart_write_bytes(PORT, send_len_cmd, strlen(send_len_cmd));
     uart_write_bytes(PORT, data, len);
@@ -55,6 +63,7 @@ void recv_udp_packet_esp01() {
     while (packet_len == 0) {
         int len = uart_read_bytes(PORT, data, BUFFER_SIZE, pdMS_TO_TICKS(50));
         if (len > 0) {
+            ESP_LOGI(TAG, "Received PDU.");
             data[len] = '\0';
 
             packet = strstr(data, "+IPD,");
