@@ -13,10 +13,12 @@ public class DBRetriever extends Thread {
     private Connection dbConnection;
     private static ArrayList<String> targetMACs = new ArrayList<>();
     private int sleep;
+    private String timescale;
 
-    public DBRetriever(Connection dbConnection, int sleep) {
+    public DBRetriever(Connection dbConnection, int sleep, String timescale) {
         this.dbConnection = dbConnection;
         this.sleep = sleep;
+        this.timescale = timescale;
     }
 
     @Override
@@ -43,11 +45,12 @@ public class DBRetriever extends Thread {
             for (String mac : targetMACs) {
                 try {
                     PreparedStatement statement = dbConnection.prepareStatement("SELECT `station_id`" + 
-                            "FROM `signal_log`" +
-                            "WHERE `mac` = ?" +
-                            "ORDER BY `rssi` DESC" +
+                            "FROM `signal_log` " +
+                            "WHERE `mac` = ? AND `time` >= NOW() - INTERVAL ? SECOND " +
+                            "ORDER BY `rssi` DESC " +
                             "LIMIT 1;");
                     statement.setString(1, mac);
+                    statement.setString(2, timescale);
                     ResultSet results = statement.executeQuery();
                     results.next();
                     int stationID = results.getInt(1);

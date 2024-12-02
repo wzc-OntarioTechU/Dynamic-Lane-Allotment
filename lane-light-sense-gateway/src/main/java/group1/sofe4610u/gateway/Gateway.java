@@ -37,8 +37,8 @@ public class Gateway {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection dbConnection = DriverManager.getConnection(properties.getProperty("dbURI", "jdbc:mysql://localhost:3306"), properties.getProperty("dbUser"), properties.getProperty("dbPass"));
-            dbRetriever = new DBRetriever(dbConnection, Integer.parseInt(properties.getProperty("dbRetrieverSleep", "60")));
-            dbConnection = DriverManager.getConnection(properties.getProperty("dbURI", "jdbc:mysql://localhost:3306"), properties.getProperty("dbUser"), properties.getProperty("dbPass"));
+            dbRetriever = new DBRetriever(dbConnection, Integer.parseInt(properties.getProperty("dbRetrieverSleep", "60")), properties.getProperty("timescale", "10"));
+            dbConnection = DriverManager.getConnection(properties.getProperty("dbURI", "jdbc:mysql://localhost:3306/bikelane"), properties.getProperty("dbUser"), properties.getProperty("dbPass"));
             dbSubmitter = new DBSubmitter(dbConnection);
             dbRetriever.start();
             dbSubmitter.start();
