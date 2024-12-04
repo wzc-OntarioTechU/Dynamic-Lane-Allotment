@@ -43,7 +43,7 @@ void udp_task(void* params) {
 void bt_task(void* params) {
     while (true) {
         start_bt_scanning();
-        vTaskDelay(pdMS_TO_TICKS(30 * 1000));
+        vTaskDelay(pdMS_TO_TICKS(5500));
     }
 }
 

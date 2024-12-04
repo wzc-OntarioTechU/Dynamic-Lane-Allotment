@@ -54,9 +54,10 @@ void bt_scan_callback(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *para
 
 void start_bt_scanning() {
     ESP_LOGI(TAG, "Starting BT scanning...");
+    esp_ble_gap_stop_scanning();
     ESP_ERROR_CHECK(esp_ble_gap_set_scan_params(&bt_scan_params));
     ESP_ERROR_CHECK(esp_ble_gap_register_callback(bt_scan_callback));
-    ESP_ERROR_CHECK(esp_ble_gap_start_scanning(30)); // scan for the max value of uint32_t seconds (2^32 - 1)s
+    ESP_ERROR_CHECK(esp_ble_gap_start_scanning(5)); // scan for the max value of uint32_t seconds (2^32 - 1)s
 }
 
 void set_bt_device_callback(void (*function)(char*, int)) {
